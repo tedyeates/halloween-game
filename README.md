@@ -25,6 +25,21 @@ npm start
 
 Then open **http://localhost:3001**. Set `PORT` to change the server port.
 
+## Deploy on Render
+
+Hollowbrook runs as a single Node web service. The included [`render.yaml`](./render.yaml) builds the client and server, starts them together, and configures the `/health` check.
+
+1. Open [Render](https://dashboard.render.com/) and choose **New → Blueprint**.
+2. Select the `tedyeates/halloween-game` repository.
+3. Apply the detected `hollowbrook` service from `render.yaml`.
+4. Share the generated `onrender.com` URL with the players.
+
+No environment variables are required. Render supplies `PORT` automatically, and the Node server serves the built React client and Socket.IO endpoint from the same origin.
+
+The free Render plan can sleep after inactivity and restarts clear in-memory rooms. Use a paid instance for a game you expect to keep open for a long time, and reconnect if the service restarts.
+
+> Vercel's default Vite preset only deploys the static frontend. Hollowbrook's realtime rooms require the Node server, so deploying only with Vercel will not produce a playable game.
+
 ## Included gameplay
 
 - Private online rooms with five-character codes and reconnect tokens

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.14.0"
+  },
   "scripts": {
     "dev": "concurrently -k -n server,client -c magenta,cyan \"npm:server:dev\" \"npm:client:dev\"",
     "server:dev": "tsx watch src/server/index.ts",
