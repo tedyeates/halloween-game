@@ -330,6 +330,20 @@ p { line-height: 1.65; }
 .fact-card p { margin: 5px 0; color: #dfd0da; font-size: 10px; line-height: 1.5; }
 .fact-card small { color: #9e8e9b; font-size: 8px; line-height: 1.45; }
 .all-visited-check { display: flex; align-items: center; gap: 9px; margin: 18px 0 12px; padding: 11px 13px; border: 1px solid #4c3c54; border-radius: 5px; background: rgba(15, 11, 24, .35); color: #c1b0c4; font-size: 10px; cursor: pointer; }
+.evil-team-panel { padding: 20px; border-color: #65404b; background: radial-gradient(circle at 100% 0, rgba(129, 47, 61, .16), transparent 45%), var(--panel); }
+.evil-team-panel .section-heading h2 { font-size: 25px; }
+.evil-team-note { margin: 8px 0 13px; color: #9e8993; font-size: 9px; line-height: 1.5; }
+.evil-team-list { display: grid; gap: 7px; }
+.evil-team-row { display: flex; align-items: flex-start; gap: 9px; padding: 9px; border: 1px solid #563a46; border-radius: 5px; background: rgba(50, 20, 32, .25); }
+.evil-team-row.demon { border-color: #7d4a51; background: rgba(104, 38, 46, .2); }
+.evil-team-row.dead { opacity: .48; }
+.evil-team-icon { flex: 0 0 25px; font-size: 20px; line-height: 1.2; }
+.evil-team-label { display: block; color: #c58b94; font-size: 7px; text-transform: uppercase; letter-spacing: .09em; }
+.evil-team-row strong { display: block; margin: 2px 0 3px; color: #f0dde0; font-size: 11px; }
+.evil-team-row small { display: block; color: #bda1a9; font-size: 8px; line-height: 1.45; }
+.evil-bluffs { margin-top: 10px; padding-top: 9px; border-top: 1px solid #513b45; }
+.evil-bluffs span { color: #9b7d86; font-size: 7px; text-transform: uppercase; letter-spacing: .09em; }
+.evil-bluffs p { margin: 3px 0 0; color: #bca3aa; font-size: 8px; }
 .grimoire { padding: 20px; }
 .grimoire .section-heading h2 { font-size: 25px; }
 .grimoire-list { display: grid; gap: 6px; margin-top: 13px; }

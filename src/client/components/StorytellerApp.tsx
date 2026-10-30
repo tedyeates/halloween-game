@@ -192,6 +192,7 @@ function StorytellerTable({ state, run, busy }: { state: StorytellerState; run: 
           <PublicChronicle state={state} />
         </div>
         <aside className="side-column">
+          <EvilTeam state={state} />
           <Grimoire state={state} />
         </aside>
       </div>
@@ -298,6 +299,52 @@ function StorytellerPausePanel({
         {pause.kind === 'roles' ? 'Begin the first night' : pause.resolved ? 'Announce dawn & continue' : 'Waiting for all secret actions…'}
         <span>→</span>
       </button>
+    </section>
+  );
+}
+
+function EvilTeam({ state }: { state: StorytellerState }) {
+  const demon = state.players.find((player) => player.alive && player.roleId === 'headless_horseman')
+    ?? state.players.find((player) => player.roleId === 'headless_horseman');
+  const minions = state.players.filter((player) => player.roleId && ROLES[player.roleId].category === 'minion');
+  if (!demon && minions.length === 0) return null;
+  const livingMinions = minions.filter((minion) => minion.alive);
+  const bluffs = state.setup?.bluffs ?? [];
+
+  return (
+    <section className="panel evil-team-panel">
+      <div className="section-heading"><div><p className="eyebrow-text">Secret allegiance</p><h2>Evil team</h2></div><span aria-hidden="true">🩸</span></div>
+      <p className="evil-team-note">Tell the Demon and Minion who their teammate is during their private role visits.</p>
+      <div className="evil-team-list">
+        {demon && (
+          <article className={`evil-team-row demon ${!demon.alive ? 'dead' : ''}`}>
+            <span className="evil-team-icon">🐎</span>
+            <div>
+              <span className="evil-team-label">Headless Horseman</span>
+              <strong>{demon.name}</strong>
+              <small>{livingMinions.length > 0
+                ? `Knows their Minion: ${livingMinions.map((minion) => `${minion.name} (${minion.roleId ? ROLES[minion.roleId].name : 'Minion'})`).join(', ')}`
+                : 'No living Minion remains.'}</small>
+            </div>
+          </article>
+        )}
+        {minions.map((minion) => (
+          <article className={`evil-team-row ${!minion.alive ? 'dead' : ''}`} key={minion.id}>
+            <span className="evil-team-icon">{minion.roleId ? ROLES[minion.roleId].icon : '🩸'}</span>
+            <div>
+              <span className="evil-team-label">{minion.roleId ? ROLES[minion.roleId].name : 'Minion'}</span>
+              <strong>{minion.name}</strong>
+              <small>{demon ? `Knows their Demon: ${demon.name} (Headless Horseman)` : 'No Demon remains.'}</small>
+            </div>
+          </article>
+        ))}
+      </div>
+      {bluffs.length > 0 && (
+        <div className="evil-bluffs">
+          <span>Demon bluffs</span>
+          <p>{bluffs.map((roleId) => ROLES[roleId].name).join(' · ')}</p>
+        </div>
+      )}
     </section>
   );
 }
