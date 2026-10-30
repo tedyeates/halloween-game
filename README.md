@@ -47,7 +47,8 @@ The free Render plan can sleep after inactivity and restarts clear in-memory roo
 - 15 original Halloween roles across Townsfolk, Outsider, Minion, and Demon teams
 - Automated first and subsequent night orders, private prompts, poison, protection, and Demon succession
 - Human Storyteller mode with suggested and editable role setups, balance guidance, a full grimoire, private-visit checklists, and voice-only result delivery
-- Automatic Storyteller pauses for role delivery and every night, with a required-visit tracker and a conspicuous reminder to visit every player
+- Roles visible privately on each player’s screen before any Storyteller visit, plus an optional role-reading pause
+- Automatic Storyteller pauses every night, with a required-visit tracker and a conspicuous reminder to visit every player
 - Player-selected secret actions with an optional note for how the Storyteller should narrate them
 - Open discussion, ordered nomination turns, simultaneous hidden ballots, execution, and one ghost vote per dead player
 - Witch Hunter, Harvest Mayor, Doomed, Crimson Heir, and Headless Horseman victory interactions

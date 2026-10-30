@@ -33,13 +33,9 @@ function StorytellerPause({ state, run, busy }: ActionPanelProps) {
     return (
       <section className="action-panel story-waiting">
         <div className="story-moon" aria-hidden="true">☾</div>
-        <p className="eyebrow-text">Private role delivery</p>
-        <h2>{narrator.roleDelivered ? 'Your role is in your hands' : 'The Storyteller is coming to you'}</h2>
-        <p>
-          {narrator.roleDelivered
-            ? 'Read your secret role and keep it hidden. The game will continue once the Storyteller has spoken with everyone.'
-            : 'Stay in your room and keep your screen private. The Storyteller will visit everyone before the game continues.'}
-        </p>
+        <p className="eyebrow-text">Read your secret role</p>
+        <h2>Your role is on your screen</h2>
+        <p>Read your ability carefully and keep it private. The Storyteller may speak with you at their discretion during this pause; the first night begins when they are ready.</p>
         <div className="waiting-host"><span className="pulse-dot" /> Do not reveal what you have seen yet.</div>
       </section>
     );

@@ -17,8 +17,7 @@ export function stateForPlayer(state: GameState, playerId: string): ClientState 
     : null;
   const player = state.players.find((candidate) => candidate.id === playerId);
   const isStorytellerMode = state.mode === 'storyteller';
-  const roleDelivered = !isStorytellerMode || state.roleDeliveredIds.includes(playerId);
-  const selfRole = roleDelivered ? player?.roleId : undefined;
+  const selfRole = player?.roleId;
   let evilTeam: EvilTeamView | null = null;
 
   if (selfRole && ROLES[selfRole].team === 'evil') {
@@ -41,7 +40,6 @@ export function stateForPlayer(state: GameState, playerId: string): ClientState 
       : undefined;
     narrator = {
       pause: state.narrator.kind,
-      roleDelivered,
       action: action && player?.roleId
         ? {
             roleId: player.roleId,

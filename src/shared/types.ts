@@ -135,7 +135,6 @@ export interface GameState {
   storytellerId: string | null;
   setup: NarratorSetup | null;
   narrator: NarratorPauseState | null;
-  roleDeliveredIds: string[];
   phase: Phase;
   players: Player[];
   day: number;
@@ -203,7 +202,6 @@ export interface EvilTeamView {
 
 export interface NarratorPlayerView {
   pause: 'roles' | 'night';
-  roleDelivered: boolean;
   action: NarratorActionPrompt | null;
   actionSubmitted: boolean;
   actionNote: string;

@@ -25,7 +25,6 @@ export function createGameState(code: string, hostId: string, mode: GameMode = '
     storytellerId: mode === 'storyteller' ? hostId : null,
     setup: null,
     narrator: null,
-    roleDeliveredIds: [],
     phase: 'lobby',
     players: [],
     day: 0,

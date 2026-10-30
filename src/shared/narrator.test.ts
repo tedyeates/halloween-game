@@ -47,47 +47,35 @@ function completeVisits(state: GameState): void {
 }
 
 describe('Storyteller mode', () => {
-  it('starts with hidden roles and a required visit for every player', () => {
+  it('shows roles immediately without a required role-delivery visit', () => {
     const state = makeNarratorState();
     startNarratorGame(state, 'storyteller', rng);
     expect(state.phase).toBe('roleReveal');
     expect(state.players.every((player) => player.roleId)).toBe(true);
     expect(state.narrator?.kind).toBe('roles');
-    expect(state.narrator?.visits).toHaveLength(5);
-    expect(stateForPlayer(state, state.players[0].id).selfRole).toBeNull();
+    expect(state.narrator?.visits).toHaveLength(0);
+    expect(stateForPlayer(state, state.players[0].id).selfRole?.id).toBe(state.players[0].roleId);
     expect(stateForPlayer(state, state.players[0].id).privateInfo).toEqual([]);
     const view = stateForStoryteller(state);
-    expect(view.pause?.visits).toHaveLength(5);
+    expect(view.pause?.visits).toHaveLength(0);
     expect(view.players.every((player) => player.roleId)).toBe(true);
   });
 
-  it('reveals the evil team only to the Demon and Minion after role delivery', () => {
+  it('shows the evil team immediately to the Demon and Minion only', () => {
     const state = makeNarratorState();
     startNarratorGame(state, 'storyteller', rng);
     const minionId = playerIdFor(state, 'bog_witch');
     const demonId = playerIdFor(state, 'headless_horseman');
     const goodId = playerIdFor(state, 'oracle');
 
-    expect(stateForPlayer(state, minionId).evilTeam).toBeNull();
-    expect(stateForPlayer(state, demonId).evilTeam).toBeNull();
-
-    markNarratorVisit(state, minionId, true);
-    markNarratorVisit(state, demonId, true);
     expect(stateForPlayer(state, minionId).evilTeam?.demon?.id).toBe(demonId);
     expect(stateForPlayer(state, demonId).evilTeam?.minions[0].id).toBe(minionId);
-    markNarratorVisit(state, goodId, true);
     expect(stateForPlayer(state, goodId).evilTeam).toBeNull();
   });
 
-  it('requires visits before beginning the first night and then reveals roles', () => {
+  it('can begin the first night without any role-delivery visits', () => {
     const state = makeNarratorState();
     startNarratorGame(state, 'storyteller', rng);
-    const first = state.players[0];
-    markNarratorVisit(state, first.id, true);
-    expect(stateForPlayer(state, first.id).selfRole?.id).toBe(first.roleId);
-    setNarratorAllVisited(state, true);
-    expect(narratorPauseCanFinish(state)).toBe(false);
-    completeVisits(state);
     expect(narratorPauseCanFinish(state)).toBe(true);
     finishNarratorPause(state, rng);
     expect(state.phase).toBe('night');

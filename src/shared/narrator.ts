@@ -16,7 +16,6 @@ import type {
   NarratorFact,
   NarratorSetup,
   NarratorVisit,
-  Player,
   RoleId,
 } from './types.js';
 
@@ -77,45 +76,19 @@ export function startNarratorGame(state: GameState, hostId: string, rng: Random)
 
   state.phase = 'roleReveal';
   state.log = [];
-  state.roleDeliveredIds = [];
-  const visits: NarratorVisit[] = state.players.map((player) => ({
-    id: randomId(rng),
-    playerId: player.id,
-    reasons: roleDeliveryReasons(state, player),
-    done: false,
-  }));
+  // Roles are shown directly on player screens. This pause is for reading and
+  // optional introductions; it has no required private visits.
   state.narrator = {
     kind: 'roles',
-    visits,
+    visits: [],
     actions: [],
-    allVisited: false,
+    allVisited: true,
     facts: [],
     resolved: true,
     pending: null,
   };
   addLog(state, STATEMENTS.welcome, 'story', rng);
-  addLog(state, 'The Storyteller is delivering secret roles privately. Keep your device close and your secrets closer.', 'system', rng);
-}
-
-function roleDeliveryReasons(state: GameState, player: Player): string[] {
-  const role = ROLES[player.roleId!];
-  const reasons = [
-    `Give ${player.name} their secret role: ${role.name} (${role.category}).`,
-    `Ability: ${role.ability}`,
-  ];
-  if (player.roleId === 'headless_horseman') {
-    const minion = state.players.find((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'minion');
-    reasons.push(`Their Minion is ${minion?.name ?? 'unknown'}. Share the three bluff roles: ${describeBluffs(state)}.`);
-  }
-  if (player.roleId && ROLES[player.roleId].category === 'minion') {
-    const demon = state.players.find((candidate) => candidate.roleId === 'headless_horseman');
-    reasons.push(`Their Demon is ${demon?.name ?? 'unknown'}. They are on the evil team together.`);
-  }
-  return reasons;
-}
-
-function describeBluffs(state: GameState): string {
-  return (state.setup?.bluffs ?? []).map((roleId) => ROLES[roleId].name).join(', ');
+  addLog(state, 'Roles are visible privately on every screen. Read carefully; the Storyteller may speak with players before the first night begins.', 'system', rng);
 }
 
 export function beginNarratorNight(state: GameState, rng: Random): void {
@@ -290,9 +263,6 @@ export function markNarratorVisit(state: GameState, playerId: string, done: bool
   const visit = pause.visits.find((candidate) => candidate.playerId === playerId);
   if (!visit) throw new Error('That player is not on the required visit list.');
   visit.done = done;
-  if (done && pause.kind === 'roles' && !state.roleDeliveredIds.includes(playerId)) {
-    state.roleDeliveredIds.push(playerId);
-  }
 }
 
 export function setNarratorAllVisited(state: GameState, allVisited: boolean): void {
@@ -303,12 +273,10 @@ export function setNarratorAllVisited(state: GameState, allVisited: boolean): vo
 export function narratorPauseCanFinish(state: GameState): boolean {
   const pause = state.narrator;
   if (!pause) return false;
+  if (pause.kind === 'roles') return true;
   if (!pause.allVisited) return false;
   if (!pause.visits.every((visit) => visit.done)) return false;
-  if (pause.kind === 'night') {
-    return pause.resolved && pause.pending !== null && pause.actions.every((action) => action.submitted);
-  }
-  return true;
+  return pause.resolved && pause.pending !== null && pause.actions.every((action) => action.submitted);
 }
 
 export function finishNarratorPause(state: GameState, rng: Random): void {
@@ -348,7 +316,6 @@ export function resetNarratorLobby(state: GameState, rng: Random): void {
   state.storytellerId = state.hostId;
   state.setup = state.players.length >= 5 && state.players.length <= 8 ? suggestSetup(state.players.length, rng) : null;
   state.narrator = null;
-  state.roleDeliveredIds = [];
   state.redHerringId = undefined;
 }
 

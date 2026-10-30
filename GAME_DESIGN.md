@@ -95,12 +95,12 @@ The app suggests a legal composition for the current player count and three lega
 
 The game automatically pauses for:
 
-1. **Private role delivery.** Every player is on the required visit list. The Storyteller tells each player their role, ability, evil teammates, or Demon bluffs.
+1. **Role reading.** Roles, abilities, and evil-team information appear immediately on every player’s private screen. No role-delivery visits are tracked. The Storyteller may use this pause to answer questions or introduce roles at their discretion, then begin the first night.
 2. **Every night.** Players with secret choices choose on their own devices as the pause begins. Their choices and optional narration requests appear on the Storyteller’s screen. Once all required choices arrive, the app calculates outcomes and shows the Storyteller the private facts and poisoned-information warnings.
 
-The Storyteller is explicitly instructed to visit **everyone**, not only the required list, so the pattern of private conversations does not expose active roles. Only required conversations appear on the checklist. The pause cannot end until every required visit is marked complete, the Storyteller confirms they visited everyone, and all required secret actions have been submitted.
+During night pauses, the Storyteller is explicitly instructed to visit **everyone**, not only the required list, so the pattern of private conversations does not expose active roles. Only required conversations appear on the checklist. The pause cannot end until every required visit is marked complete, the Storyteller confirms they visited everyone, and all required secret actions have been submitted.
 
-Player results are **voice-only**: the app never puts private results or private information in the player’s screen during Storyteller mode. The player’s role card appears after the Storyteller marks their role-delivery visit complete. The Headless Horseman and Minion also then see a private **Your evil team** section identifying their teammate; good players never receive that section. A dead player’s role change is applied when the night pause is committed.
+Player results are **voice-only**: the app never puts private results or private information in the player’s screen during Storyteller mode. The Headless Horseman and Minion see a private **Your evil team** section identifying their teammate immediately; good players never receive that section. A dead player’s role change is applied when the night pause is committed.
 
 ### Day phase
 

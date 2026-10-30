@@ -220,7 +220,29 @@ function StorytellerPausePanel({
   }
   const completedVisits = pause.visits.filter((visit) => visit.done).length;
   const pendingActions = pause.actions.filter((action) => !action.submitted).length;
-  const title = pause.kind === 'roles' ? 'Private role delivery' : `Night ${state.night} · private visits`;
+  if (pause.kind === 'roles') {
+    return (
+      <section className="panel st-pause-panel">
+        <div className="st-pause-heading">
+          <div><p className="eyebrow-text">Storyteller pause</p><h2>Role reading & introductions</h2></div>
+        </div>
+        <p className="st-instructions">
+          Every player can already see their secret role and ability on their own screen. No role-delivery visits are required.
+          Use this pause to answer questions or introduce roles privately at your discretion.
+        </p>
+        {state.setup && (
+          <div className="st-section">
+            <h3>Demon bluffs</h3>
+            <p className="muted">{state.setup.bluffs.map((roleId) => ROLES[roleId].name).join(' · ')}</p>
+          </div>
+        )}
+        <button className="primary-button full-width" disabled={busy} onClick={() => void run(api.finishPause)}>
+          Begin the first night <span>→</span>
+        </button>
+      </section>
+    );
+  }
+  const title = `Night ${state.night} · private visits`;
   return (
     <section className="panel st-pause-panel">
       <div className="st-pause-heading">
@@ -297,7 +319,7 @@ function StorytellerPausePanel({
         I have visited every player, including those not on this list.
       </label>
       <button className="primary-button full-width" disabled={!pause.canFinish || busy} onClick={() => void run(api.finishPause)}>
-        {pause.kind === 'roles' ? 'Begin the first night' : pause.resolved ? 'Announce dawn & continue' : 'Waiting for all secret actions…'}
+        {pause.resolved ? 'Announce dawn & continue' : 'Waiting for all secret actions…'}
         <span>→</span>
       </button>
     </section>
