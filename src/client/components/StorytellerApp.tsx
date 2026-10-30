@@ -10,6 +10,7 @@ import type {
   StorytellerState,
 } from '../../shared/types.js';
 import RoomCode from './RoomCode';
+import Script from './Script';
 
 const categories: { id: RoleCategory; label: string }[] = [
   { id: 'townsfolk', label: 'Townsfolk' },
@@ -54,6 +55,7 @@ export default function StorytellerApp({ state, onLeave }: { state: StorytellerS
       {state.phase === 'lobby'
         ? <StorytellerLobby state={state} run={run} busy={busy} />
         : <StorytellerTable state={state} run={run} busy={busy} />}
+      <Script />
     </main>
   );
 }
