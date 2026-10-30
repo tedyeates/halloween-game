@@ -123,5 +123,6 @@ Hollowbrook preserves the core hidden-role, information, nomination, execution, 
 - The Poltergeist consistently registers as evil/Demon rather than relying on a narrator's choice.
 - Poisoned information is generated as a plausible automated result rather than a narrator-selected lie.
 - Disconnected players do not stall a room: they are excluded from ready checks, their night and nomination turns are skipped, and ballots close once all connected eligible voters have acted. Their seat and private information remain available when they reconnect; the room pauses if everyone disconnects.
-- Roles target living players except the Oracle, who may inspect any two players.
+- Roles target living players except the Oracle, who may inspect any two other players.
+- Information roles never receive themselves as a candidate in their own clue, and the Oracle cannot select itself.
 - No Travellers, custom scripts, mid-game joins, or player-created roles are included in this first version.

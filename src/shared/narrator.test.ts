@@ -97,6 +97,8 @@ describe('Storyteller mode', () => {
     const witchId = playerIdFor(state, 'bog_witch');
     const demonId = playerIdFor(state, 'headless_horseman');
     expect(state.narrator?.actions.map((action) => action.playerId).sort()).toEqual([witchId, oracleId].sort());
+    expect(state.narrator?.actions.find((action) => action.playerId === oracleId)?.targetPlayerIds).not.toContain(oracleId);
+    expect(state.redHerringId).not.toBe(oracleId);
 
     submitNarratorAction(state, witchId, [candleId], 'Make the candle-maker’s clue feel unsettling.', rng);
     expect(state.narrator?.resolved).toBe(false);
@@ -105,6 +107,9 @@ describe('Storyteller mode', () => {
     expect(state.narrator?.facts.some((fact) => fact.playerId === candleId && fact.isFalse)).toBe(true);
     expect(state.narrator?.facts.some((fact) => fact.playerId === oracleId)).toBe(true);
     expect(state.narrator?.facts.some((fact) => fact.playerId === ghostId)).toBe(true);
+    const candleFact = state.narrator?.facts.find((fact) => fact.playerId === candleId);
+    expect(candleFact?.text).not.toContain(state.players.find((player) => player.id === candleId)!.name);
+    expect(candleFact?.text).not.toContain('Candlemaker');
     expect(stateForPlayer(state, candleId).privateInfo).toEqual([]);
     expect(stateForPlayer(state, candleId).narrator?.actionNote).toBe('');
 

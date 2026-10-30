@@ -60,8 +60,8 @@ export function buildNightPrompt(state: GameState, player: Player): NightPrompt 
       return {
         roleId: player.roleId,
         title: 'Consult the moon',
-        description: 'Choose any two players. Learn whether either registers as the Demon.',
-        targetPlayerIds: state.players.map((candidate) => candidate.id),
+        description: 'Choose two other players. Learn whether either registers as the Demon.',
+        targetPlayerIds: state.players.filter((candidate) => candidate.id !== player.id).map((candidate) => candidate.id),
         selectionCount: 2,
         confirmLabel: 'Read the omen',
       };
@@ -137,20 +137,22 @@ function advanceNight(state: GameState, rng: Random): void {
 function resolveAutomaticInfo(state: GameState, player: Player, rng: Random): void {
   const poisoned = !isAbilityWorking(state, player);
   if (player.roleId === 'occultist') {
-    const minions = state.players.filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'minion');
-    const revealed = poisoned ? pick(state.players, rng) : pick(minions, rng);
+    const others = state.players.filter((candidate) => candidate.id !== player.id);
+    const minions = others.filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'minion');
+    const revealed = poisoned ? pick(others, rng) : pick(minions, rng);
     const role = poisoned ? pick(MINIONS, rng) : ROLES[revealed.roleId!];
-    const other = pick(state.players.filter((candidate) => candidate.id !== revealed.id), rng);
+    const other = pick(others.filter((candidate) => candidate.id !== revealed.id), rng);
     const [first, second] = shuffle([revealed, other], rng);
     addInfo(state, player.id, `${first.name} or ${second.name} is the ${role.name}.`, rng, { isFalse: poisoned });
     return;
   }
 
   if (player.roleId === 'candlemaker') {
-    const townsfolk = state.players.filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'townsfolk');
-    const revealed = poisoned ? pick(state.players, rng) : pick(townsfolk, rng);
-    const role = poisoned ? pick(TOWNSFOLK, rng) : ROLES[revealed.roleId!];
-    const other = pick(state.players.filter((candidate) => candidate.id !== revealed.id), rng);
+    const others = state.players.filter((candidate) => candidate.id !== player.id);
+    const townsfolk = others.filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'townsfolk');
+    const revealed = poisoned ? pick(others, rng) : pick(townsfolk, rng);
+    const role = poisoned ? pick(TOWNSFOLK.filter((candidate) => candidate.id !== player.roleId), rng) : ROLES[revealed.roleId!];
+    const other = pick(others.filter((candidate) => candidate.id !== revealed.id), rng);
     const [first, second] = shuffle([revealed, other], rng);
     addInfo(state, player.id, `${first.name} or ${second.name} is the ${role.name}.`, rng, { isFalse: poisoned });
     return;

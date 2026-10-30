@@ -8,7 +8,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     team: 'good',
     icon: '🕯️',
     summary: 'Find a fellow Townsfolk.',
-    ability: 'On the first night, learn that one of two players is a particular Townsfolk role.',
+    ability: 'On the first night, learn that one of two other players is a particular Townsfolk role.',
   },
   occultist: {
     id: 'occultist',
@@ -17,7 +17,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     team: 'good',
     icon: '🔮',
     summary: 'Uncover a Minion.',
-    ability: 'On the first night, learn that one of two players is a particular Minion role.',
+    ability: 'On the first night, learn that one of two other players is a particular Minion role.',
   },
   coven_cook: {
     id: 'coven_cook',
@@ -44,7 +44,7 @@ export const ROLES: Record<RoleId, RoleDefinition> = {
     team: 'good',
     icon: '🌙',
     summary: 'Hunt the Demon, with one false omen.',
-    ability: 'Each night, choose two players and learn whether either is the Demon. One good player registers as a false positive.',
+    ability: 'Each night, choose two other players and learn whether either is the Demon. One other good player registers as a false positive.',
   },
   gravedigger: {
     id: 'gravedigger',

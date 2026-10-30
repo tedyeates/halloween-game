@@ -76,7 +76,7 @@ export function startNarratorGame(state: GameState, hostId: string, rng: Random)
   const oracle = state.players.find((player) => player.roleId === 'oracle');
   if (oracle) {
     state.redHerringId = shuffle(
-      state.players.filter((player) => player.roleId && ROLES[player.roleId].team === 'good'),
+      state.players.filter((player) => player.id !== oracle.id && player.roleId && ROLES[player.roleId].team === 'good'),
       rng,
     )[0].id;
   }
