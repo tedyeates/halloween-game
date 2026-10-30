@@ -14,6 +14,7 @@ export const STATEMENTS = {
   execution: (player: string) => `The bell tolls. ${player} is executed as night approaches.`,
   noExecution: 'The town lowers its hands. No one is executed today.',
   ghostVote: (player: string) => `${player} spends their final ghost vote.`,
+  suicide: (player: string) => `${player} has died by suicide.`,
   hunterShot: (hunter: string, target: string) => `${hunter} invokes the Witch Hunter’s rite and fires at ${target}!`,
   hunterMiss: 'The silver bolt finds no demon. The rite is spent.',
   goodWins: 'The Demon is gone. Dawn belongs to the living. Good wins!',

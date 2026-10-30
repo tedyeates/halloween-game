@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { actOnNomination, createGameState, currentNominator, markReady } from './engine.js';
 import {
   finishNarratorPause,
+  handlePlayerDeparture,
   markNarratorVisit,
   narratorPauseCanFinish,
   setNarratorAllVisited,
@@ -144,6 +145,62 @@ describe('Storyteller mode', () => {
     expect(state.night).toBe(2);
     expect(state.narrator?.kind).toBe('night');
     expect(state.narrator?.actions.map((action) => action.playerId)).toContain(playerIdFor(state, 'headless_horseman'));
+  });
+
+  it('counts an automated Demon leaving as a suicide and passes to the Heir at five alive', () => {
+    const state = createGameState('AUTO', 'p0', 'automated');
+    state.phase = 'day';
+    state.players = (['headless_horseman', 'crimson_heir', 'candlemaker', 'guardian', 'oracle'] as RoleId[]).map((roleId, index) => ({
+      id: `p${index}`,
+      name: `Player ${index}`,
+      roleId,
+      alive: true,
+      connected: true,
+      ghostVoteUsed: false,
+      abilityUsed: false,
+    }));
+    handlePlayerDeparture(state, 'p0', rng);
+    expect(state.players[0].alive).toBe(false);
+    expect(state.players[1].roleId).toBe('headless_horseman');
+    expect(state.phase).toBe('day');
+    expect(state.log.some((entry) => entry.text.includes('suicide'))).toBe(true);
+  });
+
+  it('awards good the win when the Demon leaves below the Heir threshold', () => {
+    const state = createGameState('AUTO', 'p0', 'automated');
+    state.phase = 'day';
+    state.players = (['headless_horseman', 'crimson_heir', 'candlemaker', 'guardian', 'oracle'] as RoleId[]).map((roleId, index) => ({
+      id: `p${index}`,
+      name: `Player ${index}`,
+      roleId,
+      alive: true,
+      connected: true,
+      ghostVoteUsed: false,
+      abilityUsed: false,
+    }));
+    state.players[4].alive = false;
+    handlePlayerDeparture(state, 'p0', rng);
+    expect(state.winner).toBe('good');
+    expect(state.phase).toBe('gameOver');
+    expect(state.log.some((entry) => entry.text.includes('suicide'))).toBe(true);
+  });
+
+  it('queues a Storyteller-mode departure without breaking the active night pause', () => {
+    const state = makeNarratorState();
+    startNarratorGame(state, 'storyteller', rng);
+    finishNarratorPause(state, rng);
+    const oracleId = playerIdFor(state, 'oracle');
+    const witchId = playerIdFor(state, 'bog_witch');
+    handlePlayerDeparture(state, oracleId, rng);
+    expect(state.narrator?.departures).toContain(oracleId);
+    expect(state.narrator?.actions.some((action) => action.playerId === oracleId)).toBe(false);
+    expect(state.players.find((player) => player.id === oracleId)?.alive).toBe(true);
+
+    submitNarratorAction(state, witchId, [playerIdFor(state, 'candlemaker')], '', rng);
+    completeVisits(state);
+    finishNarratorPause(state, rng);
+    expect(state.players.find((player) => player.id === oracleId)?.alive).toBe(false);
+    expect(state.log.some((entry) => entry.text.includes('suicide'))).toBe(true);
   });
 
   it('rejects illegal setups and duplicate roles', () => {

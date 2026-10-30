@@ -16,6 +16,7 @@ import {
 } from '../shared/engine.js';
 import {
   finishNarratorPause,
+  handlePlayerDeparture,
   markNarratorVisit,
   rerollNarratorSetup,
   setNarratorAllVisited,
@@ -394,7 +395,12 @@ io.on('connection', (socket: GameSocket) => {
           if (room.state.mode === 'automated' && room.state.hostId === playerId) {
             room.state.hostId = room.state.players.find((candidate) => candidate.connected)?.id ?? playerId;
           }
-          reconcileAfterDisconnect(room.state, playerId, Math.random);
+          if (room.state.phase !== 'gameOver') {
+            handlePlayerDeparture(room.state, playerId, Math.random);
+            if (!room.state.winner) {
+              reconcileAfterDisconnect(room.state, playerId, Math.random);
+            }
+          }
         }
         if (rooms.has(code)) broadcast(room);
       }

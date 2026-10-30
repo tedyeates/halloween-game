@@ -1,12 +1,19 @@
 import {
   addLog,
   getPlayer,
+  killPlayer,
   livingPlayers,
   randomId,
   shuffle,
   type Random,
 } from './engineUtils.js';
-import { beginNight, buildNightPrompt, nightRoleOrder, submitNightAction } from './night.js';
+import {
+  beginNight,
+  buildNightPrompt,
+  nightRoleOrder,
+  skipDisconnectedNightAction,
+  submitNightAction,
+} from './night.js';
 import { ROLES } from './roles.js';
 import { suggestBluffs, suggestSetup, validateSetup } from './setup.js';
 import { STATEMENTS } from './statements.js';
@@ -82,6 +89,7 @@ export function startNarratorGame(state: GameState, hostId: string, rng: Random)
     kind: 'roles',
     visits: [],
     actions: [],
+    departures: [],
     allVisited: true,
     facts: [],
     resolved: true,
@@ -106,6 +114,7 @@ export function beginNarratorNight(state: GameState, rng: Random): void {
     kind: 'night',
     visits,
     actions,
+    departures: [],
     allVisited: false,
     facts: [],
     resolved: false,
@@ -204,6 +213,10 @@ function resolveNarratorNight(state: GameState, rng: Random): void {
   while (working.phase === 'night') {
     const actorId = working.nightActorId;
     if (!actorId) throw new Error('The night could not be resolved.');
+    if (pause.departures.includes(actorId)) {
+      skipDisconnectedNightAction(working, actorId, rng);
+      continue;
+    }
     const action = pause.actions.find((candidate) => candidate.playerId === actorId);
     if (!action || !action.submitted) throw new Error(`Waiting for ${getPlayer(state, actorId).name} to submit an action.`);
     submitNightAction(working, actorId, action.targetIds, rng);
@@ -257,6 +270,30 @@ function resolveNarratorNight(state: GameState, rng: Random): void {
   };
 }
 
+export function handlePlayerDeparture(state: GameState, playerId: string, rng: Random): void {
+  if (state.phase === 'lobby' || state.phase === 'gameOver') return;
+  const pause = state.narrator;
+  if (state.mode === 'storyteller' && state.phase === 'night' && pause?.kind === 'night') {
+    if (!pause.departures.includes(playerId)) pause.departures.push(playerId);
+    pause.actions = pause.actions.filter((action) => action.playerId !== playerId);
+    pause.visits = pause.visits.filter((visit) => visit.playerId !== playerId);
+    pause.facts = pause.facts.filter((fact) => fact.playerId !== playerId);
+    if (!pause.resolved && pause.actions.every((action) => action.submitted)) {
+      resolveNarratorNight(state, rng);
+    }
+    return;
+  }
+  applySuicide(state, playerId, rng);
+}
+
+function applySuicide(state: GameState, playerId: string, rng: Random): void {
+  const player = getPlayer(state, playerId);
+  if (!player.alive) return;
+  addLog(state, STATEMENTS.suicide(player.name), 'death', rng);
+  killPlayer(state, playerId, 'suicide', rng);
+  if (state.phase === 'gameOver') state.narrator = null;
+}
+
 export function markNarratorVisit(state: GameState, playerId: string, done: boolean): void {
   const pause = state.narrator;
   if (!pause) throw new Error('There is no private pause to update.');
@@ -305,10 +342,20 @@ export function finishNarratorPause(state: GameState, rng: Random): void {
   state.protectedPlayerId = pending.protectedPlayerId;
   state.nightDeaths = pending.nightDeaths;
   state.lastExecutedPlayerId = pending.lastExecutedPlayerId;
-  state.narrator = null;
   state.readyPlayerIds = [];
   state.activeVote = null;
   state.phase = pending.winner ? 'gameOver' : 'day';
+
+  const departures = [...pause.departures];
+  state.narrator = null;
+  if (!state.winner) {
+    for (const playerId of departures) {
+      const player = state.players.find((candidate) => candidate.id === playerId);
+      if (!player?.alive) continue;
+      applySuicide(state, playerId, rng);
+      if (state.phase === 'gameOver') break;
+    }
+  }
 }
 
 export function resetNarratorLobby(state: GameState, rng: Random): void {

@@ -87,7 +87,7 @@ export function finishGame(state: GameState, winner: Team, reason: string, rng: 
 export function killPlayer(
   state: GameState,
   playerId: string,
-  cause: 'demon' | 'demonSelf' | 'execution' | 'hunter',
+  cause: 'demon' | 'demonSelf' | 'execution' | 'hunter' | 'suicide',
   rng: Random,
 ): boolean {
   const player = getPlayer(state, playerId);

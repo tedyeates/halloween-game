@@ -151,6 +151,7 @@ export function stateForStoryteller(state: GameState): StorytellerState {
             hint: fact.hint,
             isFalse: fact.isFalse,
           })),
+          departures: pause.departures.map(nameOf),
           allVisited: pause.allVisited,
           resolved: pause.resolved,
           publicSummary: pending?.publicSummary ?? [],

@@ -253,6 +253,11 @@ function StorytellerPausePanel({
         Visit <strong>every player</strong> so nobody can infer who has a role. Only required conversations are tracked below.
         Move through the breakout rooms, then mark each conversation complete.
       </p>
+      {pause.departures.length > 0 && (
+        <p className="st-departure-note">
+          {pause.departures.join(', ')} left the game. Their suicide will be recorded when this night pause ends.
+        </p>
+      )}
 
       {pause.actions.length > 0 && (
         <div className="st-section">

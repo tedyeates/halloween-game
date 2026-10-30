@@ -42,6 +42,10 @@ The Minion learns the Demon. The Demon learns its Minion and three good roles no
 - Executing a working Doomed player immediately awards evil the win.
 - If exactly three players are alive and no execution occurs, a living working Harvest Mayor awards good the win.
 
+### Leaving during a game
+
+Leaving an active game is resolved as a **death by suicide** and announced in the public chronicle. The departing player’s seat remains dead. Normal death effects apply: the Crimson Heir can inherit from a departing Demon when at least five players were alive, the Demon otherwise dies permanently for a good victory, and the two-player evil victory is checked. During a Storyteller night pause, the suicide is applied when that pause is committed so the pause cannot overwrite the death. Leaving during the lobby removes the seat without starting a death.
+
 ## Role script
 
 ### Townsfolk

@@ -300,6 +300,7 @@ p { line-height: 1.65; }
 .st-pause-heading h2 { margin: 3px 0 0; font-size: 33px; }
 .pause-counter { flex-shrink: 0; padding: 6px 10px; border: 1px solid #62506a; border-radius: 20px; color: #c9b4d1; font-size: 9px; }
 .st-instructions { margin: 12px 0 0; padding: 11px 13px; border-left: 2px solid var(--orange); background: rgba(164, 107, 49, .08); color: #b5a4b2; font-size: 10px; line-height: 1.6; }
+.st-departure-note { margin: 10px 0 0; padding: 9px 11px; border: 1px solid #694a4d; border-radius: 4px; background: rgba(92, 45, 48, .15); color: #d4a7a1; font-size: 9px; }
 .st-section { margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--line); }
 .st-section > h3 { margin: 0 0 10px; color: #dbcedb; font-family: var(--serif); font-size: 20px; }
 .st-action-list { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }

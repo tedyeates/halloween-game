@@ -122,6 +122,7 @@ export interface NarratorPauseState {
   kind: 'roles' | 'night';
   visits: NarratorVisit[];
   actions: NarratorAction[];
+  departures: string[];
   allVisited: boolean;
   facts: NarratorFact[];
   resolved: boolean;
@@ -284,6 +285,7 @@ export interface StorytellerPauseView {
   visits: StorytellerVisitView[];
   actions: StorytellerActionView[];
   facts: StorytellerFactView[];
+  departures: string[];
   allVisited: boolean;
   resolved: boolean;
   publicSummary: string[];
