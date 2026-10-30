@@ -189,6 +189,18 @@ export interface NarratorActionPrompt {
   selectedTargetIds: string[];
 }
 
+export interface EvilTeamMember {
+  id: string;
+  name: string;
+  roleId: RoleId;
+  alive: boolean;
+}
+
+export interface EvilTeamView {
+  demon: EvilTeamMember | null;
+  minions: EvilTeamMember[];
+}
+
 export interface NarratorPlayerView {
   pause: 'roles' | 'night';
   roleDelivered: boolean;
@@ -218,6 +230,7 @@ export interface ClientState {
   log: LogEntry[];
   selfId: string;
   selfRole: RoleDefinition | null;
+  evilTeam: EvilTeamView | null;
   narrator: NarratorPlayerView | null;
   privateInfo: PrivateInfo[];
   readyPlayerIds: string[];

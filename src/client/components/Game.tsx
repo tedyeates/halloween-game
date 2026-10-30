@@ -140,6 +140,7 @@ export default function Game({ state, onLeave }: { state: ClientState; onLeave: 
             </div>
             <aside className="side-column">
               {state.selfRole && <RoleCard role={state.selfRole} />}
+              {state.evilTeam && state.selfRole && <EvilTeamPanel state={state} />}
               {state.mode !== 'storyteller' && (
                 <section className="panel private-panel">
                   <div className="section-heading"><div><p className="eyebrow-text">For your eyes only</p><h2>Private whispers</h2></div><span aria-hidden="true">🔒</span></div>
@@ -162,5 +163,31 @@ export default function Game({ state, onLeave }: { state: ClientState; onLeave: 
         </>
       )}
     </main>
+  );
+}
+
+function EvilTeamPanel({ state }: { state: ClientState }) {
+  if (!state.evilTeam || !state.selfRole) return null;
+  const isDemon = state.selfRole.category === 'demon';
+  const allies = isDemon ? state.evilTeam.minions : state.evilTeam.demon ? [state.evilTeam.demon] : [];
+  return (
+    <section className="panel evil-team-panel">
+      <div className="section-heading"><div><p className="eyebrow-text">For your eyes only</p><h2>Your evil team</h2></div><span aria-hidden="true">🩸</span></div>
+      <p className="evil-team-note">Keep this alliance secret. These are the only players you know are on your side.</p>
+      {allies.length === 0 ? <p className="evil-team-note">No living {isDemon ? 'Minion' : 'Demon'} remains.</p> : (
+        <div className="evil-team-list">
+          {allies.map((ally) => (
+            <article className={`evil-team-row ${!ally.alive ? 'dead' : ''}`} key={ally.id}>
+              <span className="evil-team-icon">{ROLES[ally.roleId].icon}</span>
+              <div>
+                <span className="evil-team-label">{isDemon ? 'Your Minion' : 'Your Demon'}</span>
+                <strong>{ally.name}</strong>
+                <small>{ROLES[ally.roleId].name}{!ally.alive ? ' · Dead' : ''}</small>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

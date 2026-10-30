@@ -3,6 +3,7 @@ import { narratorPauseCanFinish } from './narrator.js';
 import { ROLES } from './roles.js';
 import type {
   ClientState,
+  EvilTeamView,
   GameState,
   NarratorPlayerView,
   RoleId,
@@ -18,6 +19,20 @@ export function stateForPlayer(state: GameState, playerId: string): ClientState 
   const isStorytellerMode = state.mode === 'storyteller';
   const roleDelivered = !isStorytellerMode || state.roleDeliveredIds.includes(playerId);
   const selfRole = roleDelivered ? player?.roleId : undefined;
+  let evilTeam: EvilTeamView | null = null;
+
+  if (selfRole && ROLES[selfRole].team === 'evil') {
+    const evilPlayers = state.players.filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category !== 'townsfolk' && ROLES[candidate.roleId].category !== 'outsider');
+    const demon = evilPlayers.find((candidate) => candidate.alive && candidate.roleId === 'headless_horseman')
+      ?? evilPlayers.find((candidate) => candidate.roleId === 'headless_horseman');
+    evilTeam = {
+      demon: demon?.roleId ? { id: demon.id, name: demon.name, roleId: demon.roleId, alive: demon.alive } : null,
+      minions: evilPlayers
+        .filter((candidate) => candidate.roleId && ROLES[candidate.roleId].category === 'minion')
+        .map((minion) => ({ id: minion.id, name: minion.name, roleId: minion.roleId!, alive: minion.alive })),
+    };
+  }
+
   let narrator: NarratorPlayerView | null = null;
 
   if (isStorytellerMode && state.narrator) {
@@ -62,6 +77,7 @@ export function stateForPlayer(state: GameState, playerId: string): ClientState 
     log: state.log,
     selfId: playerId,
     selfRole: selfRole ? ROLES[selfRole] : null,
+    evilTeam,
     narrator,
     privateInfo: isStorytellerMode ? [] : state.privateInfo[playerId] ?? [],
     readyPlayerIds: state.readyPlayerIds,

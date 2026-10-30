@@ -61,6 +61,24 @@ describe('Storyteller mode', () => {
     expect(view.players.every((player) => player.roleId)).toBe(true);
   });
 
+  it('reveals the evil team only to the Demon and Minion after role delivery', () => {
+    const state = makeNarratorState();
+    startNarratorGame(state, 'storyteller', rng);
+    const minionId = playerIdFor(state, 'bog_witch');
+    const demonId = playerIdFor(state, 'headless_horseman');
+    const goodId = playerIdFor(state, 'oracle');
+
+    expect(stateForPlayer(state, minionId).evilTeam).toBeNull();
+    expect(stateForPlayer(state, demonId).evilTeam).toBeNull();
+
+    markNarratorVisit(state, minionId, true);
+    markNarratorVisit(state, demonId, true);
+    expect(stateForPlayer(state, minionId).evilTeam?.demon?.id).toBe(demonId);
+    expect(stateForPlayer(state, demonId).evilTeam?.minions[0].id).toBe(minionId);
+    markNarratorVisit(state, goodId, true);
+    expect(stateForPlayer(state, goodId).evilTeam).toBeNull();
+  });
+
   it('requires visits before beginning the first night and then reveals roles', () => {
     const state = makeNarratorState();
     startNarratorGame(state, 'storyteller', rng);

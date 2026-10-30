@@ -100,7 +100,7 @@ The game automatically pauses for:
 
 The Storyteller is explicitly instructed to visit **everyone**, not only the required list, so the pattern of private conversations does not expose active roles. Only required conversations appear on the checklist. The pause cannot end until every required visit is marked complete, the Storyteller confirms they visited everyone, and all required secret actions have been submitted.
 
-Player results are **voice-only**: the app never puts private results or private information in the player’s screen during Storyteller mode. The player’s role card appears after the Storyteller marks their role-delivery visit complete. A dead player’s role change is applied when the night pause is committed.
+Player results are **voice-only**: the app never puts private results or private information in the player’s screen during Storyteller mode. The player’s role card appears after the Storyteller marks their role-delivery visit complete. The Headless Horseman and Minion also then see a private **Your evil team** section identifying their teammate; good players never receive that section. A dead player’s role change is applied when the night pause is committed.
 
 ### Day phase
 
