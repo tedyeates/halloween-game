@@ -318,6 +318,8 @@ export interface ClientToServerEvents {
   'nomination:act': (payload: { targetId: string | null }, callback: (result: ActionResult) => void) => void;
   'vote:cast': (payload: { vote: boolean }, callback: (result: ActionResult) => void) => void;
   'hunter:shoot': (payload: { targetId: string }, callback: (result: ActionResult) => void) => void;
+  'room:leave': (callback: (result: ActionResult) => void) => void;
+  'host:kick': (payload: { playerId: string }, callback: (result: ActionResult) => void) => void;
   'storyteller:update-setup': (payload: { roles: RoleId[]; bluffs: RoleId[] }, callback: (result: ActionResult) => void) => void;
   'storyteller:reroll': (callback: (result: ActionResult) => void) => void;
   'storyteller:mark-visit': (payload: { playerId: string; done: boolean }, callback: (result: ActionResult) => void) => void;
@@ -328,4 +330,5 @@ export interface ClientToServerEvents {
 export interface ServerToClientEvents {
   'state:update': (state: ClientState) => void;
   'storyteller:update': (state: StorytellerState) => void;
+  'room:closed': (message: string) => void;
 }

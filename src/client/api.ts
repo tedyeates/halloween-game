@@ -15,6 +15,8 @@ export const api = {
   createRoom: (name: string, mode: GameMode) => request<SavedSession>((callback) => socket.emit('room:create', { name, mode }, callback)),
   joinRoom: (name: string, code: string) => request<SavedSession>((callback) => socket.emit('room:join', { name, code }, callback)),
   rejoin: (session: SavedSession) => request<SavedSession>((callback) => socket.emit('room:rejoin', session, callback)),
+  leaveRoom: () => request((callback) => socket.emit('room:leave', callback)),
+  kickPlayer: (playerId: string) => request((callback) => socket.emit('host:kick', { playerId }, callback)),
   start: () => request((callback) => socket.emit('game:start', callback)),
   restart: () => request((callback) => socket.emit('game:restart', callback)),
   ready: () => request((callback) => socket.emit('player:ready', callback)),

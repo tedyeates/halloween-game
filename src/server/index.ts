@@ -108,6 +108,9 @@ function addPlayer(room: Room, name: string, socket: GameSocket): JoinResult {
     socketId: socket.id,
   });
   room.reconnectTokens.set(playerId, reconnectToken);
+  if (room.state.mode === 'automated' && !room.state.players.some((player) => player.id === room.state.hostId)) {
+    room.state.hostId = playerId;
+  }
   attachSocket(socket, room.state.code, playerId);
   syncNarratorSetup(room.state, Math.random);
   return { playerId, reconnectToken, mode: room.state.mode };
@@ -323,6 +326,86 @@ io.on('connection', (socket: GameSocket) => {
 
   socket.on('hunter:shoot', (payload, callback) => {
     respond(socket, callback, ({ room, playerId }) => hunterShoot(room.state, playerId, payload?.targetId, Math.random));
+  });
+
+  socket.on('host:kick', (payload, callback) => {
+    respondHost(socket, callback, ({ room, playerId }) => {
+      if (room.state.phase !== 'lobby') throw new Error('Players can only be removed before the game begins.');
+      const target = room.state.players.find((player) => player.id === payload?.playerId);
+      if (!target) throw new Error('That player is no longer in the room.');
+      if (target.id === playerId) throw new Error('You cannot remove yourself.');
+      const kickedSocketId = target.socketId;
+      room.state.players = room.state.players.filter((player) => player.id !== target.id);
+      delete room.state.privateInfo[target.id];
+      room.reconnectTokens.delete(target.id);
+      syncNarratorSetup(room.state, Math.random);
+
+      if (kickedSocketId) {
+        io.to(kickedSocketId).emit('room:closed', 'The host removed you from the room.');
+        const kickedSocket = io.sockets.sockets.get(kickedSocketId);
+        if (kickedSocket) {
+          kickedSocket.data.code = undefined;
+          kickedSocket.data.playerId = undefined;
+          void kickedSocket.leave(room.state.code);
+        }
+      }
+    });
+  });
+
+  socket.on('room:leave', (callback) => {
+    const reply = acknowledgement(callback);
+    const { code, playerId } = socket.data;
+    try {
+      if (!code || !playerId) {
+        reply({ ok: true });
+        return;
+      }
+      const room = rooms.get(code);
+      if (!room) throw new Error('This room no longer exists.');
+
+      const isStoryteller = room.state.mode === 'storyteller' && room.state.storytellerId === playerId;
+      if (isStoryteller) {
+        if (room.storytellerSocketId !== socket.id) throw new Error('Your Storyteller session is no longer active.');
+        room.reconnectTokens.delete(playerId);
+        room.storytellerSocketId = undefined;
+        for (const player of room.state.players) {
+          player.connected = false;
+          player.socketId = undefined;
+        }
+        rooms.delete(code);
+        io.to(code).emit('room:closed', 'The Storyteller left and closed the room.');
+        io.in(code).socketsLeave(code);
+      } else {
+        const player = room.state.players.find((candidate) => candidate.id === playerId);
+        if (!player || player.socketId !== socket.id) throw new Error('Your player session is no longer active.');
+        player.connected = false;
+        player.socketId = undefined;
+        room.reconnectTokens.delete(playerId);
+
+        if (room.state.phase === 'lobby') {
+          room.state.players = room.state.players.filter((candidate) => candidate.id !== playerId);
+          delete room.state.privateInfo[playerId];
+          if (room.state.mode === 'automated' && room.state.hostId === playerId) {
+            room.state.hostId = room.state.players.find((candidate) => candidate.connected)?.id ?? '';
+          }
+          syncNarratorSetup(room.state, Math.random);
+          if (room.state.players.length === 0 && !room.storytellerSocketId) rooms.delete(code);
+        } else {
+          if (room.state.mode === 'automated' && room.state.hostId === playerId) {
+            room.state.hostId = room.state.players.find((candidate) => candidate.connected)?.id ?? playerId;
+          }
+          reconcileAfterDisconnect(room.state, playerId, Math.random);
+        }
+        if (rooms.has(code)) broadcast(room);
+      }
+
+      socket.data.code = undefined;
+      socket.data.playerId = undefined;
+      void socket.leave(code);
+      reply({ ok: true });
+    } catch (error) {
+      reply({ ok: false, error: error instanceof Error ? error.message : 'Could not leave the room.' });
+    }
   });
 
   socket.on('disconnect', () => {

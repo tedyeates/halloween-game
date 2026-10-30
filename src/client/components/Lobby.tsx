@@ -24,6 +24,11 @@ export default function Lobby({ state, run, busy }: LobbyProps) {
               <span className="avatar">{avatars[index]}</span>
               <div><strong>{player.name}</strong><small>{player.id === state.selfId ? 'You' : player.connected ? 'Ready to play' : 'Disconnected'}</small></div>
               {player.id === state.hostId && <span className="host-badge">Host</span>}
+              {isHost && player.id !== state.selfId && (
+                <button className="kick-player-button" onClick={() => {
+                  if (window.confirm(`Remove ${player.name} from the room?`)) void run(() => api.kickPlayer(player.id));
+                }}>Remove</button>
+              )}
             </div>
           ))}
           {Array.from({ length: Math.max(0, 5 - state.players.length) }).map((_, index) => (

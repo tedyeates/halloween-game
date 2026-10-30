@@ -26,7 +26,7 @@ function phaseLabel(state: StorytellerState): string {
   return state.winner === 'good' ? 'Good wins' : 'Evil wins';
 }
 
-export default function StorytellerApp({ state }: { state: StorytellerState }) {
+export default function StorytellerApp({ state, onLeave }: { state: StorytellerState; onLeave: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
 
@@ -47,6 +47,7 @@ export default function StorytellerApp({ state }: { state: StorytellerState }) {
           <span className="storyteller-badge">Storyteller</span>
           <span className={`phase-badge ${state.phase === 'night' ? 'night' : ''}`}>{phaseLabel(state)}</span>
           <RoomCode code={state.code} />
+          <button className="leave-room-button" onClick={onLeave}>Leave</button>
         </div>
       </header>
       {error && <div className="game-error" role="alert">{error}<button onClick={() => setError('')} aria-label="Dismiss error">×</button></div>}
@@ -92,6 +93,9 @@ function StorytellerLobby({ state, run, busy }: { state: StorytellerState; run: 
                 <span className="avatar">{['🎃', '🦇', '🕯️', '🕸️', '🌙', '👻', '🍬', '⚰️'][index]}</span>
                 <strong>{player.name}</strong>
                 <small>{player.connected ? 'Ready' : 'Disconnected'}</small>
+                <button className="kick-player-button" onClick={() => {
+                  if (window.confirm(`Remove ${player.name} from the room?`)) void run(() => api.kickPlayer(player.id));
+                }}>Remove</button>
               </div>
             ))}
           </div>

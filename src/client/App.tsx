@@ -56,16 +56,25 @@ export default function App() {
       setState(null);
       setStorytellerState(nextState);
     };
+    const onRoomClosed = (message: string) => {
+      sessionStore?.removeItem(SESSION_KEY);
+      session.current = null;
+      setState(null);
+      setStorytellerState(null);
+      setError(message);
+    };
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('state:update', onState);
     socket.on('storyteller:update', onStorytellerState);
+    socket.on('room:closed', onRoomClosed);
     if (socket.connected) onConnect();
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('state:update', onState);
       socket.off('storyteller:update', onStorytellerState);
+      socket.off('room:closed', onRoomClosed);
     };
   }, []);
 
@@ -83,6 +92,22 @@ export default function App() {
     sessionStore?.setItem(SESSION_KEY, JSON.stringify(result.data));
   }
 
+  async function leaveGame() {
+    const isStoryteller = Boolean(storytellerState);
+    const message = isStoryteller
+      ? 'Leave the game and close this room for everyone?'
+      : 'Leave this room? If a game is in progress, your seat will remain behind as disconnected.';
+    if (!window.confirm(message)) return;
+
+    await api.leaveRoom();
+    sessionStore?.removeItem(SESSION_KEY);
+    session.current = null;
+    setState(null);
+    setStorytellerState(null);
+    setError('');
+    socket.disconnect().connect();
+  }
+
   return (
     <>
       <div className="ambient" aria-hidden="true"><span className="moon" /><span className="mist mist-one" /><span className="mist mist-two" /></div>
@@ -93,7 +118,7 @@ export default function App() {
         </div>
       )}
       {!connected && <div className="connection-banner">Reconnecting to Hollowbrook…</div>}
-      {storytellerState ? <StorytellerApp state={storytellerState} /> : state ? <Game state={state} /> : (
+      {storytellerState ? <StorytellerApp state={storytellerState} onLeave={leaveGame} /> : state ? <Game state={state} onLeave={leaveGame} /> : (
         <Landing
           onEnter={enterRoom}
           busy={busy}

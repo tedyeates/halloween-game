@@ -65,7 +65,7 @@ function NeighbourChip({ player, side }: { player: ClientPlayer | null; side: 'P
   );
 }
 
-export default function Game({ state }: { state: ClientState }) {
+export default function Game({ state, onLeave }: { state: ClientState; onLeave: () => void }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const neighbours = getNeighbours(state);
@@ -88,6 +88,7 @@ export default function Game({ state }: { state: ClientState }) {
           {state.mode === 'storyteller' && <span className="storyteller-badge">Storyteller-led</span>}
           <span className={`phase-badge ${state.phase === 'night' ? 'night' : ''}`}>{phaseLabel(state)}</span>
           <RoomCode code={state.code} />
+          <button className="leave-room-button" onClick={onLeave}>Leave</button>
         </div>
       </header>
 
