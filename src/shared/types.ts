@@ -336,6 +336,7 @@ export interface ClientToServerEvents {
   'storyteller:update-setup': (payload: { roles: RoleId[]; bluffs: RoleId[] }, callback: (result: ActionResult) => void) => void;
   'storyteller:reroll': (callback: (result: ActionResult) => void) => void;
   'storyteller:mark-visit': (payload: { playerId: string; done: boolean }, callback: (result: ActionResult) => void) => void;
+  'storyteller:kill': (payload: { playerId: string }, callback: (result: ActionResult) => void) => void;
   'storyteller:all-visited': (payload: { allVisited: boolean }, callback: (result: ActionResult) => void) => void;
   'storyteller:finish-pause': (callback: (result: ActionResult) => void) => void;
 }

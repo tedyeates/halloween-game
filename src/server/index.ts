@@ -11,12 +11,13 @@ import {
   hunterShoot,
   markReady,
   reconcileAfterDisconnect,
+  reconcileAfterPlayerDeath,
   restartGame,
   startGame,
 } from '../shared/engine.js';
 import {
   finishNarratorPause,
-  handlePlayerDeparture,
+  handlePlayerSuicide,
   markNarratorVisit,
   rerollNarratorSetup,
   setNarratorAllVisited,
@@ -309,6 +310,18 @@ io.on('connection', (socket: GameSocket) => {
     respondHost(socket, callback, ({ room }) => markNarratorVisit(room.state, payload?.playerId, Boolean(payload?.done)));
   });
 
+  socket.on('storyteller:kill', (payload, callback) => {
+    respondHost(socket, callback, ({ room }) => {
+      if (room.state.mode !== 'storyteller') throw new Error('Only a Storyteller can use this control.');
+      if (room.state.phase === 'lobby' || room.state.phase === 'gameOver') throw new Error('There is no active game to change.');
+      const target = room.state.players.find((player) => player.id === payload?.playerId);
+      if (!target) throw new Error('That player is no longer in the room.');
+      if (!target.alive) throw new Error('That player is already dead.');
+      handlePlayerSuicide(room.state, target.id, Math.random);
+      if (!room.state.winner) reconcileAfterPlayerDeath(room.state, target.id, Math.random);
+    });
+  });
+
   socket.on('storyteller:all-visited', (payload, callback) => {
     respondHost(socket, callback, ({ room }) => setNarratorAllVisited(room.state, Boolean(payload?.allVisited)));
   });
@@ -396,8 +409,9 @@ io.on('connection', (socket: GameSocket) => {
             room.state.hostId = room.state.players.find((candidate) => candidate.connected)?.id ?? playerId;
           }
           if (room.state.phase !== 'gameOver') {
-            handlePlayerDeparture(room.state, playerId, Math.random);
+            handlePlayerSuicide(room.state, playerId, Math.random);
             if (!room.state.winner) {
+              reconcileAfterPlayerDeath(room.state, playerId, Math.random);
               reconcileAfterDisconnect(room.state, playerId, Math.random);
             }
           }

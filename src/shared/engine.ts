@@ -123,7 +123,7 @@ export function markReady(state: GameState, playerId: string, rng: Random): void
 }
 
 function readyRequirementsMet(state: GameState): boolean {
-  const required = (state.phase === 'roleReveal' ? state.players : livingPlayers(state)).filter((player) => player.connected);
+  const required = livingPlayers(state).filter((player) => player.connected);
   return required.length > 0 && required.every((candidate) => state.readyPlayerIds.includes(candidate.id));
 }
 
@@ -211,8 +211,8 @@ function advanceNominations(state: GameState, rng: Random): void {
   state.nominationIndex += 1;
   while (state.nominationIndex < state.nominationOrder.length) {
     const nominator = getPlayer(state, state.nominationOrder[state.nominationIndex]);
-    if (nominator.connected) return;
-    addLog(state, STATEMENTS.pass(nominator.name), 'vote', rng);
+    if (nominator.alive && nominator.connected) return;
+    if (nominator.connected) addLog(state, STATEMENTS.pass(nominator.name), 'vote', rng);
     state.nominationIndex += 1;
   }
   resolveDay(state, rng);
@@ -293,6 +293,43 @@ export function reconcileAfterDisconnect(state: GameState, disconnectedPlayerId:
     }
     return;
   }
+}
+
+export function reconcileAfterPlayerDeath(state: GameState, playerId: string, rng: Random): void {
+  state.readyPlayerIds = state.readyPlayerIds.filter((id) => id !== playerId);
+  if (state.phase === 'gameOver') return;
+
+  if (state.phase === 'roleReveal' || state.phase === 'day') {
+    if (!readyRequirementsMet(state)) return;
+    if (state.phase === 'roleReveal') {
+      if (state.mode === 'storyteller') return;
+      beginNight(state, rng);
+    } else {
+      startNominations(state, rng);
+    }
+    return;
+  }
+
+  if (state.phase !== 'nominations') return;
+  if (state.onBlock?.playerId === playerId) state.onBlock = null;
+
+  if (state.activeVote) {
+    if (state.activeVote.nomineeId === playerId) {
+      state.activeVote = null;
+      advanceNominations(state, rng);
+      return;
+    }
+    if (state.activeVote.votes[playerId] === undefined) {
+      state.activeVote.eligibleVoterIds = state.activeVote.eligibleVoterIds.filter((id) => id !== playerId);
+    }
+    const connectedVoters = state.activeVote.eligibleVoterIds.filter((id) => getPlayer(state, id).connected);
+    if (connectedVoters.length > 0 && connectedVoters.every((id) => state.activeVote!.votes[id] !== undefined)) {
+      closeVote(state, rng);
+    }
+    return;
+  }
+
+  if (state.nominationOrder[state.nominationIndex] === playerId) advanceNominations(state, rng);
 }
 
 export function restartGame(state: GameState, playerId: string, rng: Random): void {

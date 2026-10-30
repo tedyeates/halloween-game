@@ -195,7 +195,7 @@ function StorytellerTable({ state, run, busy }: { state: StorytellerState; run: 
         </div>
         <aside className="side-column">
           <StorytellerEvilTeam state={state} />
-          <Grimoire state={state} />
+          <Grimoire state={state} run={run} busy={busy} />
         </aside>
       </div>
     </>
@@ -379,17 +379,39 @@ function StorytellerEvilTeam({ state }: { state: StorytellerState }) {
   );
 }
 
-function Grimoire({ state }: { state: StorytellerState }) {
+function Grimoire({
+  state,
+  run,
+  busy,
+}: {
+  state: StorytellerState;
+  run: (action: () => Promise<ActionResult>) => Promise<boolean>;
+  busy: boolean;
+}) {
+  const queuedDepartures = state.pause?.departures ?? [];
   return (
     <section className="panel grimoire">
       <div className="section-heading"><div><p className="eyebrow-text">For your eyes only</p><h2>Grimoire</h2></div><span aria-hidden="true">🔒</span></div>
+      <p className="grimoire-note">Use <strong>Kill</strong> to record a player’s death by suicide if they leave or are cheating.</p>
       <div className="grimoire-list">
         {state.players.map((player) => {
           const role = player.roleId ? ROLES[player.roleId] : null;
+          const queued = queuedDepartures.includes(player.name);
           return (
             <article className={`grimoire-player ${!player.alive ? 'dead' : ''}`} key={player.id}>
               <span className="grimoire-icon">{role?.icon ?? '·'}</span>
               <div><strong>{player.name}</strong><small>{role?.name ?? 'Awaiting role'} · {player.alive ? 'Alive' : 'Dead'}{!player.alive && !player.ghostVoteUsed ? ' · Ghost vote' : ''}</small></div>
+              {player.alive && (
+                <button
+                  className="kill-player-button"
+                  disabled={busy || queued}
+                  onClick={() => {
+                    if (window.confirm(`Kill ${player.name} by suicide? This will be public and cannot be undone.`)) {
+                      void run(() => api.storytellerKill(player.id));
+                    }
+                  }}
+                >{queued ? 'Queued' : 'Kill'}</button>
+              )}
             </article>
           );
         })}

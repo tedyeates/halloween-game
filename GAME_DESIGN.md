@@ -110,9 +110,11 @@ Player results are **voice-only**: the app never puts private results or private
 
 Once the Storyteller announces dawn, the app resumes normal play. Players handle readiness, nominations, simultaneous secret ballots, executions, and ghost votes through the same automated flow as a standard game. The Storyteller observes from a separate dashboard with the full grimoire.
 
-### Guidance without arbitrary overrides
+### Guidance and moderation controls
 
-The app remains the authority on outcomes. The Storyteller cannot edit roles, deaths, poison, targets, or votes. The Storyteller receives facts, false-information warnings, public outcomes, and legal action prompts, then decides how to phrase them and how to perform the visit.
+The app remains the authority on calculated outcomes. The Storyteller cannot edit roles, poison, targets, votes, or an existing death. They receive facts, false-information warnings, public outcomes, and legal action prompts, then decide how to phrase them and how to perform the visit.
+
+The Storyteller does have one moderation override: they can kill any living player by suicide from the grimoire. This is announced publicly and triggers all normal death, succession, and victory rules. It exists for players who leave or are caught cheating; during a Storyteller night pause the suicide is safely queued until the pause is committed.
 
 ## Current rule adaptations
 

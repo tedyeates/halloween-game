@@ -27,6 +27,7 @@ export const api = {
   updateSetup: (roles: RoleId[], bluffs: RoleId[]) => request((callback) => socket.emit('storyteller:update-setup', { roles, bluffs }, callback)),
   rerollSetup: () => request((callback) => socket.emit('storyteller:reroll', callback)),
   markVisit: (playerId: string, done: boolean) => request((callback) => socket.emit('storyteller:mark-visit', { playerId, done }, callback)),
+  storytellerKill: (playerId: string) => request((callback) => socket.emit('storyteller:kill', { playerId }, callback)),
   allVisited: (allVisited: boolean) => request((callback) => socket.emit('storyteller:all-visited', { allVisited }, callback)),
   finishPause: () => request((callback) => socket.emit('storyteller:finish-pause', callback)),
 };

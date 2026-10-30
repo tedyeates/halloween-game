@@ -46,7 +46,7 @@ The free Render plan can sleep after inactivity and restarts clear in-memory roo
 - Balanced role compositions for 5, 6, 7, and 8 players
 - 15 original Halloween roles across Townsfolk, Outsider, Minion, and Demon teams
 - Automated first and subsequent night orders, private prompts, poison, protection, and Demon succession
-- Human Storyteller mode with suggested and editable role setups, balance guidance, a full grimoire, private-visit checklists, and voice-only result delivery
+- Human Storyteller mode with suggested and editable role setups, balance guidance, a full grimoire, private-visit checklists, voice-only result delivery, and a public suicide moderation control for players who leave or cheat
 - Roles visible privately on each player’s screen before any Storyteller visit, plus an optional role-reading pause
 - Automatic Storyteller pauses every night, with a required-visit tracker and a conspicuous reminder to visit every player
 - Player-selected secret actions with an optional note for how the Storyteller should narrate them

@@ -270,11 +270,12 @@ function resolveNarratorNight(state: GameState, rng: Random): void {
   };
 }
 
-export function handlePlayerDeparture(state: GameState, playerId: string, rng: Random): void {
+export function handlePlayerSuicide(state: GameState, playerId: string, rng: Random): void {
   if (state.phase === 'lobby' || state.phase === 'gameOver') return;
   const pause = state.narrator;
   if (state.mode === 'storyteller' && state.phase === 'night' && pause?.kind === 'night') {
-    if (!pause.departures.includes(playerId)) pause.departures.push(playerId);
+    if (pause.departures.includes(playerId)) return;
+    pause.departures.push(playerId);
     pause.actions = pause.actions.filter((action) => action.playerId !== playerId);
     pause.visits = pause.visits.filter((visit) => visit.playerId !== playerId);
     pause.facts = pause.facts.filter((fact) => fact.playerId !== playerId);

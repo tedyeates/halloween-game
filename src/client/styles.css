@@ -347,8 +347,12 @@ p { line-height: 1.65; }
 .evil-bluffs p { margin: 3px 0 0; color: #bca3aa; font-size: 8px; }
 .grimoire { padding: 20px; }
 .grimoire .section-heading h2 { font-size: 25px; }
+.grimoire-note { margin: 8px 0 0; color: #8e7f96; font-size: 8px; line-height: 1.5; }
 .grimoire-list { display: grid; gap: 6px; margin-top: 13px; }
 .grimoire-player { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border: 1px solid #403349; border-radius: 4px; background: rgba(15, 11, 24, .35); }
+.grimoire-player > div { min-width: 0; flex: 1; }
+.kill-player-button { flex-shrink: 0; margin-left: auto; padding: 4px 7px; border: 1px solid #75484c; border-radius: 3px; background: rgba(102, 42, 46, .18); color: #dfaaa3; font-size: 8px; }
+.kill-player-button:hover:not(:disabled) { border-color: #a45e5c; color: #ffc9be; }
 .grimoire-player.dead { opacity: .48; }
 .grimoire-icon { font-size: 18px; }
 .grimoire-player strong { display: block; color: #dfd1dc; font-size: 10px; }
